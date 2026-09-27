@@ -1,0 +1,166 @@
+{
+  "exchanges": {
+    "0x28c6c06298d514db089934071355e5743bf21d60": {
+      "name": "Binance Hot Wallet 14",
+      "category": "Regulated Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "0x21a31ee1afc51d94c2efccaa3c0940001828856a": {
+      "name": "Binance Hot Wallet 1",
+      "category": "Regulated Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be": {
+      "name": "Binance Hot Wallet 2",
+      "category": "Regulated Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503": {
+      "name": "Binance Hot Wallet 8",
+      "category": "Regulated Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "0x7160ec948283731fb6c117b8f0514101e1ee9999": {
+      "name": "WazirX India Deposit Wallet",
+      "category": "FIU-IND Regulated VASP",
+      "country": "India",
+      "kyc_required": true,
+      "color": "#06B6D4"
+    },
+    "0x503204a709674e2f1649c1b5c4128d8ff822557e": {
+      "name": "CoinDCX India Main Wallet",
+      "category": "FIU-IND Regulated VASP",
+      "country": "India",
+      "kyc_required": true,
+      "color": "#06B6D4"
+    },
+    "0x70e24e626487e411516e88d4c95f190ad52f8548": {
+      "name": "CoinDCX Hot Wallet 2",
+      "category": "FIU-IND Regulated VASP",
+      "country": "India",
+      "kyc_required": true,
+      "color": "#06B6D4"
+    },
+    "0x503204a709674e2f1649c1b5c4128d8f5231b467": {
+      "name": "Coinbase Prime Custody",
+      "category": "Regulated Centralized Exchange",
+      "country": "USA",
+      "kyc_required": true,
+      "color": "#3B82F6"
+    },
+    "0xdfd5293d8e347dfe59e90efd55b2956a1343963d": {
+      "name": "Huobi / HTX Hot Wallet",
+      "category": "Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "0x0d0707963952f2fba59dd06f2b425ace40b492fe": {
+      "name": "Gate.io Hot Wallet",
+      "category": "Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "0xa7efae728d2936e78bda97dc267687568dd593f3": {
+      "name": "OKX Hot Wallet",
+      "category": "Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "0x1522900b6dafac587d499a862861c0869be6e428": {
+      "name": "Bybit Hot Wallet",
+      "category": "Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "1NDyJtNTjW41505058721111111111111": {
+      "name": "Binance BTC Hot Wallet",
+      "category": "Regulated Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo": {
+      "name": "Binance BTC Cold Storage",
+      "category": "Regulated Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "1F1H1gGy25wR7Aw5ib6jLYVDqG4CNGh47u": {
+      "name": "Kraken BTC Deposit Hub",
+      "category": "Regulated Centralized Exchange",
+      "country": "USA / Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "3FHPJFzsT5FfBqbhENPkoSrWjxPucm1sTt": {
+      "name": "Bitfinex BTC Deposit Hub",
+      "category": "Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "3GRdiEiWcYNR35DoqRJWDCdyPktXmAS4aK": {
+      "name": "Coinbase BTC Hot Wallet",
+      "category": "Regulated Centralized Exchange",
+      "country": "USA",
+      "kyc_required": true,
+      "color": "#3B82F6"
+    },
+    "13HUhwHyhPhYKHXjDuixwCQEbJH7NZiH89": {
+      "name": "Huobi / HTX BTC Deposit Hub",
+      "category": "Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "1E213uACbgqYx1AqTHsqsHPgNiX8j8ydEa": {
+      "name": "OKX BTC Hot Wallet",
+      "category": "Centralized Exchange",
+      "country": "Global",
+      "kyc_required": true,
+      "color": "#10B981"
+    },
+    "17smwun83JH5pbFZWyV8cBkvkGYYHJ5bhG": {
+      "name": "WazirX India BTC Hot Wallet",
+      "category": "FIU-IND Regulated VASP",
+      "country": "India",
+      "kyc_required": true,
+      "color": "#06B6D4"
+    }
+  },
+  "mixers": {
+    "0xd90e2f925da726b50c4ed8d0fb90ad053324f31b": {
+      "name": "Tornado Cash: 0.1 ETH Pool",
+      "category": "Sanctioned Decentralized Mixer",
+      "color": "#EF4444"
+    },
+    "0x47ce0c6ed5b0ce3d3a51fdb1c52dc66a7c3c2936": {
+      "name": "Tornado Cash: 1 ETH Pool",
+      "category": "Sanctioned Decentralized Mixer",
+      "color": "#EF4444"
+    },
+    "0x910cbd523d972eb0a6f4cae4618ad62622b39dbf": {
+      "name": "Tornado Cash: 10 ETH Pool",
+      "category": "Sanctioned Decentralized Mixer",
+      "color": "#EF4444"
+    },
+    "0xa160cd373d029ac477121332a5a29c3d0526a02b": {
+      "name": "Tornado Cash: Router",
+      "category": "Sanctioned Decentralized Mixer Router",
+      "color": "#EF4444"
+    }
+  }
+}

@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Fraud Wallet Tracer | SIH Problem Statement 26183 (I4C / MHA)</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Vis.js Network Graph Library -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0B0F19;
+            --card-bg: rgba(26, 34, 53, 0.75);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --accent-blue: #3B82F6;
+            --accent-green: #10B981;
+            --accent-red: #EF4444;
+            --accent-gold: #F59E0B;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, #EF4444, #3B82F6);
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .logo-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #FFFFFF, #94A3B8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .hero-input-container {
+            max-width: 920px;
+            margin: 2rem auto 1rem auto;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #60A5FA, #34D399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .control-box {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 1.25rem 1.5rem;
+            width: 100%;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .input-row input {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1.5px solid var(--card-border);
+            padding: 0.85rem 1.25rem;
+            border-radius: 12px;
+            color: #FFF;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-row input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #FFF;
+            border: none;
+            padding: 0.85rem 1.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn-report {
+            background: linear-gradient(135deg, #059669, #10B981);
+        }
+
+        .options-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .chain-detector-badge {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #60A5FA;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .error-alert {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--accent-red);
+            color: #F87171;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            width: 100%;
+            display: none;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .samples-bar {
+            margin-top: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--card-border);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            background: rgba(59, 130, 246, 0.25);
+            border-color: var(--accent-blue);
+            color: #FFF;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.5rem;
+            margin: 1.5rem 2rem 2rem 2rem;
+            flex: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .graph-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            position: relative;
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .graph-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .graph-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #network-container {
+            width: 100%;
+            height: 520px;
+            min-height: 520px;
+            background: radial-gradient(circle at center, #111827 0%, #0B0F19 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .graph-legend {
+            padding: 0.75rem 1.25rem;
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .analytics-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .panel-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .stat-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--card-border);
+            padding: 0.75rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .stat-lbl {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .risk-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .risk-CRITICAL { background: rgba(239, 68, 68, 0.2); color: #EF4444; border: 1px solid #EF4444; }
+        .risk-HIGH { background: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid #F59E0B; }
+        .risk-MEDIUM { background: rgba(59, 130, 246, 0.2); color: #3B82F6; border: 1px solid #3B82F6; }
+        .risk-LOW { background: rgba(16, 185, 129, 0.2); color: #10B981; border: 1px solid #10B981; }
+
+        .flag-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .flag-item {
+            background: rgba(15, 23, 42, 0.6);
+            border-left: 3px solid var(--accent-gold);
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+
+        .exchange-hit {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .exchange-icon {
+            background: var(--accent-green);
+            color: #000;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .loader-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .loader-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: #1E293B;
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            color: #F8FAFC;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-badge">I4C / MHA</div>
+            <div>
+                <div class="logo-title">Crypto Fraud Wallet Tracer</div>
+                <div class="subtitle">SIH Problem Statement 26183 • Real-Time VASP Identification Engine</div>
+            </div>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn btn-report" onclick="generateReport()">
+                <i class="fa-solid fa-file-pdf"></i> Court Report
+            </button>
+        </div>
+    </header>
+
+    <!-- Centered Hero Input Container -->
+    <div class="hero-input-container">
+        <div class="hero-title">Trace Victim-Reported Suspect Wallet</div>
+        <div class="hero-desc">Auto-routes to Etherscan (ETH) or Blockstream (BTC) with NCRP/SAHYOG automated endpoint integration</div>
+
+        <div class="control-box">
+            <!-- Error Alert Box -->
+            <div class="error-alert" id="errorAlert"></div>
+
+            <div class="input-row">
+                <input type="text" id="walletInput" placeholder="Paste Suspect Wallet Address (e.g. 0x... for ETH or 1... / 3... / bc1... for BTC)" value="0xd8da6bf26964af9d7eed9e03e53415d37aa96045" oninput="detectChainOnInput(this.value)">
+                <button class="btn" onclick="startTrace()">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> Trace Flow
+                </button>
+            </div>
+
+            <div class="options-row">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span>Chain Routing:</span>
+                    <span class="chain-detector-badge" id="detectedChainBadge">Ethereum (ETH)</span>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:1.25rem;">
+                    <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;" title="If checked, stops branch traversal upon hitting an exchange. If unchecked, traces full 4-hop depth.">
+                        <input type="checkbox" id="stopAtExchangeToggle" onchange="startTrace()"> Stop at Exchange VASP
+                    </label>
+
+                    <div>
+                        <label for="hopsRange">Max Depth: <b id="hopsVal" style="color:#FFF;">3</b> Hops</label>
+                        <input type="range" id="hopsRange" min="1" max="4" value="3" oninput="document.getElementById('hopsVal').innerText = this.value">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Demo Chips -->
+        <div class="samples-bar">
+            <span><i class="fa-solid fa-bolt" style="color:var(--accent-gold);"></i> Quick Test Addresses:</span>
+            <div class="chip" onclick="loadSample('0xd8da6bf26964af9d7eed9e03e53415d37aa96045')">Ethereum (Vitalik)</div>
+            <div class="chip" onclick="loadSample('0x28c6c06298d514db089934071355e5743bf21d60')">Ethereum (WazirX Target)</div>
+            <div class="chip" onclick="loadSample('149w62rY42aZBox8fGcmqNsXUzSStKeq8C')">Bitcoin (SamSam Ransomware OFAC)</div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Grid -->
+    <div class="dashboard-grid">
+        <!-- Visual Network Graph -->
+        <div class="graph-card">
+            <div class="loader-overlay" id="loader">
+                <div class="spinner"></div>
+                <div style="margin-top: 1rem; font-weight: 500;">Traversing Multi-Hop Ledgers...</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.3rem;">Running real-time VASP matching & obfuscation analysis</div>
+            </div>
+
+            <div class="graph-header">
+                <div class="graph-title">
+                    <i class="fa-solid fa-diagram-project" style="color:var(--accent-blue);"></i> Transaction Flow Network Graph
+                </div>
+                <div id="activeChainIndicator" style="font-size:0.75rem; background:rgba(59,130,246,0.2); padding:0.25rem 0.6rem; border-radius:12px; color:var(--accent-blue);">
+                    Chain: Auto-detect
+                </div>
+            </div>
+
+            <div id="network-container"></div>
+
+            <div class="graph-legend">
+                <div class="legend-item"><div class="dot" style="background:var(--accent-gold);"></div> Suspect Wallet (Origin)</div>
+                <div class="legend-item"><div class="dot" style="background:var(--accent-blue);"></div> Intermediary Burner Wallet</div>
+                <div class="legend-item"><div class="dot" style="background:var(--accent-green);"></div> Reached Exchange (VASP)</div>
+                <div class="legend-item"><div class="dot" style="background:var(--accent-red);"></div> Privacy Mixer / Tumbler</div>
+            </div>
+        </div>
+
+        <!-- Right Side Panel -->
+        <div class="analytics-panel">
+            <div class="panel-card">
+                <div class="panel-title">
+                    <span><i class="fa-solid fa-shield-halved" style="color:var(--accent-blue);"></i> VASP Identification</span>
+                    <span id="riskBadge" class="risk-badge risk-LOW">LOW RISK</span>
+                </div>
+
+                <div class="stat-grid">
+                    <div class="stat-box">
+                        <div class="stat-val" id="nodeCount">0</div>
+                        <div class="stat-lbl">Unique Wallets</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="edgeCount">0</div>
+                        <div class="stat-lbl">Transfers Traced</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">Identified Recipient Exchanges:</div>
+                    <div id="exchangeContainer">
+                        <div style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">No exchange hit yet. Run a trace to find destination accounts.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-card" style="flex:1;">
+                <div class="panel-title">
+                    <span><i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-gold);"></i> Risk Flags</span>
+                </div>
+                <div class="flag-list" id="flagContainer">
+                    <div style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">No risk flags triggered.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature 5: Investigator Summary Report Modal -->
+    <div class="modal" id="reportModal">
+        <div class="modal-content">
+            <div style="border-bottom: 2px solid var(--accent-blue); padding-bottom: 1rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between;">
+                <div>
+                    <h2 style="color:var(--accent-blue);">INVESTIGATOR INTELLIGENCE REPORT</h2>
+                    <div style="font-size:0.8rem; color:var(--text-muted);">Standardized I4C / SAHYOG Evidence Summary</div>
+                </div>
+                <button class="btn" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</button>
+            </div>
+            
+            <div id="reportDetails"></div>
+            
+            <div style="margin-top:2rem; text-align:right;">
+                <button class="btn" style="background:#475569;" onclick="document.getElementById('reportModal').style.display='none'">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let network = null;
+        let currentTraceData = null;
+
+        const ETH_REGEX = /^0x[a-fA-F0-9]{40}$/;
+        const BTC_REGEX = /^(1[a-km-zA-HJ-NP-Z1-9]{25,34}|3[a-km-zA-HJ-NP-Z1-9]{25,34}|bc1[ac-hj-np-z0-9]{11,87})$/i;
+
+        function detectChainOnInput(val) {
+            const clean = val.trim();
+            const badge = document.getElementById('detectedChainBadge');
+            const errAlert = document.getElementById('errorAlert');
+            
+            if (ETH_REGEX.test(clean)) {
+                badge.innerText = "Ethereum (ETH)";
+                badge.style.color = "#60A5FA";
+                errAlert.style.display = 'none';
+                return "ETH";
+            } else if (BTC_REGEX.test(clean)) {
+                badge.innerText = "Bitcoin (BTC)";
+                badge.style.color = "#F59E0B";
+                errAlert.style.display = 'none';
+                return "BTC";
+            } else {
+                badge.innerText = "Invalid Format";
+                badge.style.color = "#F87171";
+                if (clean.length > 0) {
+                    errAlert.innerText = "⚠️ Unrecognized wallet address format. Address must be Ethereum (0x... 42 characters) or Bitcoin (starts with '1', '3', or 'bc1').";
+                    errAlert.style.display = 'block';
+                } else {
+                    errAlert.style.display = 'none';
+                }
+                return "INVALID";
+            }
+        }
+
+        function loadSample(addr) {
+            document.getElementById('walletInput').value = addr;
+            detectChainOnInput(addr);
+            startTrace();
+        }
+
+        async function startTrace() {
+            const address = document.getElementById('walletInput').value.trim();
+            const maxDepth = document.getElementById('hopsRange').value;
+            const stopAtEx = document.getElementById('stopAtExchangeToggle').checked;
+            const loader = document.getElementById('loader');
+            const errAlert = document.getElementById('errorAlert');
+
+            const chainType = detectChainOnInput(address);
+            if (chainType === "INVALID" || !address) {
+                errAlert.innerText = "⚠️ Unrecognized wallet address format. Address must be Ethereum (0x... 42 characters) or Bitcoin (starts with '1', '3', or 'bc1').";
+                errAlert.style.display = 'block';
+                return;
+            }
+
+            errAlert.style.display = 'none';
+            loader.classList.add('active');
+
+            try {
+                const response = await fetch('/api/trace', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        address: address, 
+                        max_depth: parseInt(maxDepth),
+                        stop_at_exchange: stopAtEx
+                    })
+                });
+
+                const data = await response.json();
+                loader.classList.remove('active');
+
+                if (!response.ok || data.status === 'error' || data.error) {
+                    errAlert.innerText = "⚠️ " + (data.error || "Failed to trace address format.");
+                    errAlert.style.display = 'block';
+                    return;
+                }
+
+                currentTraceData = data;
+                renderDashboard(data);
+
+            } catch (err) {
+                loader.classList.remove('active');
+                errAlert.innerText = "⚠️ Server connection error: " + err.message;
+                errAlert.style.display = 'block';
+            }
+        }
+
+        function renderDashboard(data) {
+            document.getElementById('nodeCount').innerText = data.summary.total_nodes;
+            document.getElementById('edgeCount').innerText = data.summary.total_edges;
+            document.getElementById('activeChainIndicator').innerText = "Chain: " + data.summary.chain;
+
+            const riskBadge = document.getElementById('riskBadge');
+            riskBadge.innerText = data.summary.risk_score + " RISK";
+            riskBadge.className = `risk-badge risk-${data.summary.risk_score}`;
+
+            const exContainer = document.getElementById('exchangeContainer');
+            exContainer.innerHTML = '';
+
+            if (data.summary.exchanges_reached.length === 0) {
+                exContainer.innerHTML = `<div style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">No known custodial exchange hit within ${data.summary.max_depth || 3} hops.</div>`;
+            } else {
+                data.summary.exchanges_reached.forEach(ex => {
+                    exContainer.innerHTML += `
+                        <div class="exchange-hit">
+                            <div class="exchange-icon"><i class="fa-solid fa-building-columns"></i></div>
+                            <div>
+                                <div style="font-weight:700; color:#FFF; font-size:0.85rem;">${ex.name}</div>
+                                <div style="font-size:0.7rem; color:var(--text-muted);">${ex.category} • KYC Required (${ex.country})</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            const flagContainer = document.getElementById('flagContainer');
+            flagContainer.innerHTML = '';
+
+            if (data.risk_flags.length === 0) {
+                flagContainer.innerHTML = `<div style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">Clean trace. No obfuscation flags triggered.</div>`;
+            } else {
+                data.risk_flags.forEach(flag => {
+                    flagContainer.innerHTML += `
+                        <div class="flag-item" style="border-left-color: ${flag.severity === 'CRITICAL' ? '#EF4444' : '#F59E0B'}">
+                            <div style="font-weight:600; color:#FFF;">[${flag.severity}] ${flag.title}</div>
+                            <div style="color:var(--text-muted);">${flag.description}</div>
+                        </div>
+                    `;
+                });
+            }
+
+            const container = document.getElementById('network-container');
+            const graphData = {
+                nodes: new vis.DataSet(data.nodes),
+                edges: new vis.DataSet(data.edges)
+            };
+
+            const options = {
+                nodes: {
+                    borderWidth: 2,
+                    shadow: { enabled: true, color: 'rgba(0,0,0,0.6)', size: 8, x: 2, y: 2 },
+                    font: { color: '#FFFFFF', size: 13, face: 'Inter', strokeWidth: 2, strokeColor: '#0F172A' }
+                },
+                edges: {
+                    width: 2,
+                    color: { color: '#64748B', highlight: '#3B82F6', hover: '#60A5FA' },
+                    arrows: { to: { enabled: true, scaleFactor: 0.9 } },
+                    smooth: { type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.4 },
+                    font: { color: '#94A3B8', size: 11, face: 'Inter', background: '#0F172A', strokeWidth: 0 }
+                },
+                physics: {
+                    enabled: false
+                },
+                interaction: {
+                    hover: true,
+                    zoomView: true,
+                    dragView: true,
+                    dragNodes: true
+                }
+            };
+
+            if (network) network.destroy();
+            network = new vis.Network(container, graphData, options);
+            network.fit();
+            setTimeout(() => { if (network) network.fit(); }, 100);
+        }
+
+        function generateReport() {
+            if (!currentTraceData) {
+                alert("Please trace a wallet first before generating an investigator report.");
+                return;
+            }
+
+            const d = currentTraceData;
+            const rContainer = document.getElementById('reportDetails');
+
+            let exListHTML = d.summary.exchanges_reached.length > 0 
+                ? d.summary.exchanges_reached.map(e => `<li><b>${e.name}</b> (${e.category}, ${e.country}) - Urgent Legal Freeze Notice</li>`).join('')
+                : "<li>No target custodial exchange identified within max hops.</li>";
+
+            let flagsHTML = d.risk_flags.length > 0
+                ? d.risk_flags.map(f => `<li>[${f.severity}] <b>${f.title}</b>: ${f.description}</li>`).join('')
+                : "<li>No laundering risk flags triggered.</li>";
+
+            rContainer.innerHTML = `
+                <p><b>Report Timestamp:</b> ${d.timestamp}</p>
+                <p><b>Origin Suspect Wallet:</b> <code>${d.summary.origin_wallet}</code></p>
+                <p><b>Blockchain:</b> ${d.summary.chain}</p>
+                <p><b>Assessed Risk Level:</b> <span class="risk-badge risk-${d.summary.risk_score}">${d.summary.risk_score}</span></p>
+
+                <hr style="margin:1rem 0; border-color:var(--card-border);">
+
+                <h3>1. Target Exchange VASP Identification</h3>
+                <ul>${exListHTML}</ul>
+
+                <h3 style="margin-top:1rem;">2. Risk & Obfuscation Analysis</h3>
+                <ul>${flagsHTML}</ul>
+
+                <h3 style="margin-top:1rem;">3. Multi-Hop Graph Traversal Summary</h3>
+                <p>Total Unique Addresses Analyzed: <b>${d.summary.total_nodes}</b></p>
+                <p>Total Fund Transfers Traced: <b>${d.summary.total_edges}</b></p>
+            `;
+
+            document.getElementById('reportModal').style.display = 'flex';
+        }
+
+        window.onload = () => {
+            detectChainOnInput(document.getElementById('walletInput').value);
+            startTrace();
+        };
+    </script>
+</body>
+</html>
