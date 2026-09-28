@@ -126,6 +126,14 @@ class CryptoTracer:
                                     "description": f"Funds routed directly into privacy mixer contract ({entity_info['name']}).",
                                     "node": dest_address
                                 })
+                            elif entity_info["entity_type"] == "BRIDGE":
+                                risk_flags.append({
+                                    "code": "CROSS_CHAIN_SWAP",
+                                    "severity": "HIGH",
+                                    "title": "AI: Cross-Chain Fund Movement Detected",
+                                    "description": f"Funds routed into {entity_info['name']}. High probability of cross-chain chainhopping or DEX swapping.",
+                                    "node": dest_address
+                                })
                         
                         if dest_address not in graph:
                             graph.add_node(

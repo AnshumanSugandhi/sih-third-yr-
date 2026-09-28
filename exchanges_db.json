@@ -154,5 +154,19 @@
       "color": "#EF4444",
       "source": "source: tornado-cash/verified-contracts"
     }
+  },
+  "bridges": {
+    "0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD": {
+      "name": "Uniswap V3: Router",
+      "category": "Decentralized Exchange (DEX)",
+      "color": "#8B5CF6",
+      "source": "source: dex-tracker"
+    },
+    "0xdf0770df86a8034b3efef0a1bb3c8890529d81d2": {
+      "name": "Stargate Finance: Bridge",
+      "category": "Cross-Chain Bridge",
+      "color": "#8B5CF6",
+      "source": "source: layerzero/bridges"
+    }
   }
 }

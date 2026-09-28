@@ -138,6 +138,12 @@ def api_trace():
                 shape = "triangle"
                 size = 32
                 hover_title = f"<b>SANCTIONED PRIVACY MIXER</b><br>Name: <b>{entity['name']}</b><br>Dataset: <code>{source_tag}</code><br>Category: {entity['category']}<br>Status: Obfuscation Contract Flagged"
+            elif entity["entity_type"] == "BRIDGE":
+                node_type = "BRIDGE_DEX"
+                group = "bridge"
+                shape = "hexagon"
+                size = 32
+                hover_title = f"<b>AI: CROSS-CHAIN BRIDGE / DEX</b><br>Name: <b>{entity['name']}</b><br>Dataset: <code>{source_tag}</code><br>Category: {entity['category']}<br>Status: Chainhopping / Swap Activity Flagged"
                 
         color_hex = attrs.get("color", "#3B82F6")
         if entity and entity["entity_type"] == "EXCHANGE":

@@ -11,21 +11,22 @@ from typing import Dict, Any, Optional, Tuple
 
 DB_FILE_PATH = os.path.join(os.path.dirname(__file__), "exchanges_db.json")
 
-def load_exchange_database() -> Tuple[Dict[str, Any], Dict[str, Any]]:
-    """Load exchange and mixer datasets from local JSON file."""
+def load_exchange_database() -> Tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any]]:
+    """Load exchange, mixer, and bridge datasets from local JSON file."""
     if os.path.exists(DB_FILE_PATH):
         try:
             with open(DB_FILE_PATH, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                return data.get("exchanges", {}), data.get("mixers", {})
+                return data.get("exchanges", {}), data.get("mixers", {}), data.get("bridges", {})
         except Exception as e:
             print(f"[ExchangesDB] Warning: Failed to load {DB_FILE_PATH}: {e}")
             
-    return {}, {}
+    return {}, {}, {}
 
-EXCHANGES_DATA, MIXERS_DATA = load_exchange_database()
+EXCHANGES_DATA, MIXERS_DATA, BRIDGES_DATA = load_exchange_database()
 KNOWN_EXCHANGES = EXCHANGES_DATA
 KNOWN_MIXERS = MIXERS_DATA
+KNOWN_BRIDGES = BRIDGES_DATA
 
 
 def check_address_entity(address: str) -> Optional[Dict[str, Any]]:
@@ -66,6 +67,21 @@ def check_address_entity(address: str) -> Optional[Dict[str, Any]]:
                 "color": meta.get("color", "#EF4444"),
                 "source": source,
                 "vasp_tag": f"Privacy Mixer Flagged: {meta['name']} ({source})"
+            }
+
+    # 3. Match Bridge / DEX
+    for k_addr, meta in BRIDGES_DATA.items():
+        if k_addr.strip() == clean_addr or k_addr.strip().lower() == clean_addr_lower:
+            source = meta.get("source", "source: defillama/bridges")
+            return {
+                "entity_type": "BRIDGE",
+                "name": meta["name"],
+                "category": meta.get("category", "Cross-Chain Bridge / DEX"),
+                "country": "Decentralized",
+                "kyc_required": False,
+                "color": meta.get("color", "#8B5CF6"),
+                "source": source,
+                "vasp_tag": f"Cross-Chain Action: {meta['name']} ({source})"
             }
             
     return None
