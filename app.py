@@ -112,11 +112,11 @@ def api_trace():
         y_offset = (node_index - (total_in_hop - 1) / 2.0) * 110
         y_coord = y_offset
 
-        node_type = "UNRESOLVED_BURNER"
+        node_type = "UNKNOWN_WALLET"
         group = "burner"
         shape = "dot"
         size = 22
-        hover_title = f"<b>UNRESOLVED BURNER WALLET</b><br>Address: <code>{node}</code><br>Hop Level: {hop_lvl}<br>Status: Anonymous / Untraced"
+        hover_title = f"<b>UNKNOWN WALLET</b><br>Address: <code>{node}</code><br>Hop Level: {hop_lvl}<br>Status: Unlisted in verified exchange datasets"
         
         if is_origin:
             node_type = "SUSPECT_ORIGIN"
@@ -125,18 +125,19 @@ def api_trace():
             size = 34
             hover_title = f"<b>ORIGIN SUSPECT WALLET</b><br>Address: <code>{node}</code><br>Status: Primary Victim Intake Address"
         elif entity:
+            source_tag = entity.get("source", "tradezon/cex-list")
             if entity["entity_type"] == "EXCHANGE":
                 node_type = "REACHED_EXCHANGE"
                 group = "exchange"
                 shape = "star"
                 size = 38
-                hover_title = f"<b>REACHED CUSTODIAL EXCHANGE (VASP)</b><br>Exchange: <b>{entity['name']}</b><br>Category: {entity['category']}<br>Jurisdiction: {entity['country']}<br>KYC Status: Required<br>⚡ <i>Action: Issue SAHYOG Freeze Notice</i>"
+                hover_title = f"<b>REACHED CUSTODIAL EXCHANGE (VASP)</b><br>Exchange: <b>{entity['name']}</b><br>Dataset: <code>{source_tag}</code><br>Category: {entity['category']}<br>Jurisdiction: {entity['country']}<br>KYC Status: Required<br>⚡ <i>Action: Issue SAHYOG Freeze Notice</i>"
             elif entity["entity_type"] == "MIXER":
                 node_type = "KNOWN_MIXER"
                 group = "mixer"
                 shape = "triangle"
                 size = 32
-                hover_title = f"<b>SANCTIONED PRIVACY MIXER</b><br>Name: <b>{entity['name']}</b><br>Category: {entity['category']}<br>Status: Obfuscation Contract Flagged"
+                hover_title = f"<b>SANCTIONED PRIVACY MIXER</b><br>Name: <b>{entity['name']}</b><br>Dataset: <code>{source_tag}</code><br>Category: {entity['category']}<br>Status: Obfuscation Contract Flagged"
                 
         color_hex = attrs.get("color", "#3B82F6")
         if entity and entity["entity_type"] == "EXCHANGE":

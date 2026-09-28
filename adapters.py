@@ -93,6 +93,8 @@ class EthereumAdapter(AbstractChainAdapter):
                     if len(outgoing_txs) >= limit:
                         break
                         
+            # Sort deterministically by timestamp, tx_hash, to address
+            outgoing_txs.sort(key=lambda x: (x.get("timestamp", 0), x.get("tx_hash", ""), x.get("to", "")))
             return outgoing_txs
             
         except Exception as e:
@@ -159,6 +161,8 @@ class BitcoinAdapter(AbstractChainAdapter):
                 if len(outgoing_txs) >= limit:
                     break
                     
+            # Sort deterministically by timestamp, tx_hash, to address
+            outgoing_txs.sort(key=lambda x: (x.get("timestamp", 0), x.get("tx_hash", ""), x.get("to", "")))
             return outgoing_txs
             
         except Exception as e:

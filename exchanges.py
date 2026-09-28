@@ -41,6 +41,7 @@ def check_address_entity(address: str) -> Optional[Dict[str, Any]]:
     # 1. Match Exchange VASP
     for k_addr, meta in EXCHANGES_DATA.items():
         if k_addr.strip() == clean_addr or k_addr.strip().lower() == clean_addr_lower:
+            source = meta.get("source", "source: tradezon/cex-list")
             return {
                 "entity_type": "EXCHANGE",
                 "name": meta["name"],
@@ -48,12 +49,14 @@ def check_address_entity(address: str) -> Optional[Dict[str, Any]]:
                 "country": meta.get("country", "Global"),
                 "kyc_required": meta.get("kyc_required", True),
                 "color": meta.get("color", "#10B981"),
-                "vasp_tag": f"Funds reached: {meta['name']} — VASP identified"
+                "source": source,
+                "vasp_tag": f"Funds reached: {meta['name']} — VASP identified ({source})"
             }
             
     # 2. Match Mixer Contract
     for k_addr, meta in MIXERS_DATA.items():
         if k_addr.strip() == clean_addr or k_addr.strip().lower() == clean_addr_lower:
+            source = meta.get("source", "source: tornado-cash/verified-contracts")
             return {
                 "entity_type": "MIXER",
                 "name": meta["name"],
@@ -61,7 +64,8 @@ def check_address_entity(address: str) -> Optional[Dict[str, Any]]:
                 "country": "Sanctioned / Anonymous",
                 "kyc_required": False,
                 "color": meta.get("color", "#EF4444"),
-                "vasp_tag": f"Privacy Mixer Flagged: {meta['name']}"
+                "source": source,
+                "vasp_tag": f"Privacy Mixer Flagged: {meta['name']} ({source})"
             }
             
     return None
