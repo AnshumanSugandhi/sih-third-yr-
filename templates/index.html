@@ -759,6 +759,8 @@
                 });
             }
 
+            document.getElementById('textTracePre').innerText = data.summary.text_trace_plain || 'No trace path found.';
+
             const container = document.getElementById('network-container');
             const graphData = {
                 nodes: new vis.DataSet(data.nodes),
@@ -832,6 +834,31 @@
             `;
 
             document.getElementById('reportModal').style.display = 'flex';
+        }
+
+        function toggleTextTraceView() {
+            const container = document.getElementById('textTraceContainer');
+            const btnLabel = document.getElementById('textTraceBtnLabel');
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                btnLabel.innerText = 'Hide trace text';
+            } else {
+                container.style.display = 'none';
+                btnLabel.innerText = 'Show trace as text';
+            }
+        }
+
+        function copyTextTrace() {
+            const text = document.getElementById('textTracePre').innerText;
+            if (text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Trace copied to clipboard!');
+                }).catch(err => {
+                    alert('Failed to copy text: ' + err);
+                });
+            } else {
+                alert('No trace data to copy.');
+            }
         }
 
         window.onload = () => {
